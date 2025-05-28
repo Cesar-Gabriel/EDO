@@ -15,6 +15,7 @@ def is_admin():
 home_template = """
 <!doctype html>
 <title>EDOBOLT</title>
+<link rel=style href="style.css">
 <h1>Welcome to EDOBOLT</h1>
 <p>Your platform, your game updates</p>
 {% if 'username' in session %}
