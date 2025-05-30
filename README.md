@@ -7,4 +7,4 @@ What can you do you with EDOBOLT? Simple!
 * Upload games with GJ API
 * Not pay IRL money for useless things
 * Let your comunity make mods!
-  
+(This may change in a future)  
