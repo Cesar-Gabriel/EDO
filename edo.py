@@ -7,16 +7,16 @@ users = {}
 posts = []
 
 # Helper to check admin
-ADMIN_USERNAME = "EDOBOLT"
+ADMIN_USERNAME = "COBOLT"
 
 def is_admin():
     return session.get('username') == ADMIN_USERNAME
 
 home_template = """
 <!doctype html>
-<title>EDOBOLT</title>
+<title>COBOLT</title>
 <link rel=style href="style.css">
-<h1>Welcome to EDOBOLT</h1>
+<h1>Welcome to COBOLT</h1>
 <p>Your platform, your game updates</p>
 {% if 'username' in session %}
         <p>Logged in as {{ session['username'] }} | <a href="{{ url_for('logout') }}">Logout</a></p>
