@@ -1,7 +1,7 @@
 body {
     background-color: #202833;
     color: white;
-    font-family: 'Courier New', Courier, monospace;
+    @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
     margin: 0;
     padding: 20px;
     font-size: 16px;
