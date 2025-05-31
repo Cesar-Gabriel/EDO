@@ -1,65 +1,81 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>COBOLT</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="buttons.css">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Arial, sans-serif; margin: 2em; }
-        .admin-btn { margin-bottom: 1em; }
-        .post { margin-bottom: 1em; }
-        textarea { width: 100%; min-height: 60px; }
-        .users-list, .posts-list { margin: 1em 0; }
-        .admin-panel { border: 1px solid #888; padding: 1em; margin-top: 2em; }
+        body { font-family: Arial, sans-serif; background: #181a1b; color: #fff; margin: 0; }
+        header { background: #23272a; padding: 1em; text-align: center; }
+        h1 { margin: 0; }
+        main { max-width: 800px; margin: 2em auto; padding: 1em; background: #222; border-radius: 8px; }
+        .game-list { list-style: none; padding: 0; }
+        .game-item { background: #292b2f; margin: 1em 0; padding: 1em; border-radius: 6px; }
+        .game-title { font-size: 1.2em; margin: 0 0 0.5em 0; }
+        .game-desc { margin: 0 0 0.5em 0; }
+        .game-link { color: #00bfff; text-decoration: none; }
+        form { margin-top: 2em; }
+        input, textarea { width: 100%; margin-bottom: 1em; padding: 0.5em; border-radius: 4px; border: none; }
+        button { background: #00bfff; color: #fff; border: none; padding: 0.7em 1.5em; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #009acd; }
     </style>
 </head>
 <body>
-    <h1>Welcome to COBOLT</h1>
-    <p>Your platform, your game updates</p>
-    <!-- Simulated session logic for demonstration -->
-    <div id="user-section">
-        <p>Logged in as <span id="username">COBOLT</span> | <a href="#logout">Logout</a></p>
-        <a href="#admin" class="admin-btn"><button>Admin Panel</button></a>
-        <form id="post-form">
-            <textarea name="content" placeholder="Share your game update..." required></textarea><br>
-            <link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
-                    <div class="container">
-                    <div class="pixel"><p>SEND</p></div>
+    <header>
+        <h1>COBOLT</h1>
+        <p>Your platform, your game updates</p>
+    </header>
+    <main>
+        <h2>Latest Games</h2>
+        <ul class="game-list" id="gameList">
+            <!-- Games will be loaded here -->
+        </ul>
+        <h2>Submit Your Game</h2>
+        <form id="gameForm">
+            <input type="text" id="title" placeholder="Game Title" required>
+            <textarea id="desc" placeholder="Short Description" required></textarea>
+            <input type="url" id="url" placeholder="Game URL (e.g., itch.io, AWS S3, etc.)" required>
+            <button type="submit">Submit</button>
         </form>
-    </div>
-    <div id="guest-section">
-        <a href="login.html">Login</a> | <a href="register.html">Register</a>
-    </div>
-    <hr>
-    <h2>Posts</h2>
-    <div class="posts-list">
-        <div class="post"><b>COBOLT</b>: Welcome to the admin panel!</div>
-        <!-- More posts here -->
-        <p>No posts yet.</p>
-    </div>
-    <!-- Admin Panel Example -->
-    <div class="admin-panel" id="admin-panel" style="display:none;">
-        <h1>Admin Panel</h1>
-        <p>Welcome, admin! You have administrator access.</p>
-        <h2>Registered Users</h2>
-        <ul class="users-list">
-            <li>COBOLT</li>
-            <!-- More users here -->
-        </ul>
-        <h2>Posts</h2>
-        <ul class="posts-list">
-            <li><b>COBOLT</b>: Welcome to the admin panel!</li>
-            <!-- More posts here -->
-        </ul>
-        <a href="#">Back to Home</a>
-    </div>
+    </main>
     <script>
-        // Example JS to show/hide admin panel (simulate admin access)
-        document.querySelector('.admin-btn').onclick = function(e) {
+        // Replace with your AWS API Gateway endpoint
+        const API_URL = 'https://your-api-id.execute-api.region.amazonaws.com/prod/games';
+
+        // Load games from AWS
+        async function loadGames() {
+            const res = await fetch(API_URL);
+            const games = await res.json();
+            const list = document.getElementById('gameList');
+            list.innerHTML = '';
+            games.forEach(game => {
+                const li = document.createElement('li');
+                li.className = 'game-item';
+                li.innerHTML = `
+                    <div class="game-title">${game.title}</div>
+                    <div class="game-desc">${game.desc}</div>
+                    <a class="game-link" href="${game.url}" target="_blank">Play</a>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Submit new game to AWS
+        document.getElementById('gameForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            document.getElementById('admin-panel').style.display = 'block';
-        };
+            const title = document.getElementById('title').value;
+            const desc = document.getElementById('desc').value;
+            const url = document.getElementById('url').value;
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, desc, url })
+            });
+            document.getElementById('gameForm').reset();
+            loadGames();
+        });
+
+        loadGames();
     </script>
 </body>
 </html>
