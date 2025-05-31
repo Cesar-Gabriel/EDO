@@ -1,5 +1,5 @@
-# EDOBOLT, your platform, your game updates
-What can you do you with EDOBOLT? Simple!
+  # COBOLT, your platform, your game updates
+What can you do you with COBOLT? Simple!
 
 * Be free from Gamejolt's greed
 * Upload images
