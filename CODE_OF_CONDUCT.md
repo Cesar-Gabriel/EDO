@@ -25,8 +25,16 @@ If you believe someone is violating the code of conduct, we ask that you report 
  - Advocating for, or encouraging, any of the above behavior.
  - Repeated harassment of others. In general, if someone asks you to stop, then stop.
 - **When we disagree, try to understand why.** Disagreements, both social and technical, happen all the time and EDOBOLT is no exception. It is important that we resolve disagreements and differing views constructively. Remember that we’re different. The strength of EDOBOLT comes from its varied community, people from a wide range of backgrounds. Different people have different perspectives on issues. Being unable to understand why someone holds a viewpoint doesn’t mean that they’re wrong. Don’t forget that it is human to err and blaming each other doesn’t get us anywhere. Instead, focus on helping to resolve issues and learning from mistakes.
+- **Alts to evade bans are not allowed.** If we discover you or we get a bunch of reports of an alt, we will try to ban IP until the main is unbanned, this is to bring peace and security to the platform.
 
 Original text courtesy of the [Speak Up! project](http://web.archive.org/web/20141109123859/http://speakup.io/coc.html).
+
+## Punishments
+In case you broke a Guideline or Code of condut you'll be punished, here's a short guide of the punishments
+ - 1 time broke: Warn. You will be warned for broking the Guideline for the first time
+ - Twice to tirth times broke: Timeout for a day. You'll be timeout if you broke it for the second and third time, depending of what Guideline you broke you'll get a timeout from for a day
+ - Fourth time broke: Ban for a week to a month.
+ - Fifth time broke: Permanent ban.
 
 ## Questions?
 
