@@ -194,7 +194,9 @@
                 div.style.margin = '1em 0';
                 div.style.padding = '1em';
                 div.style.borderRadius = '6px';
-                div.innerHTML = `<strong>${post.username || 'Anonymous'}</strong> <span style="color:#aaa;font-size:0.9em;">${new Date(post.date).toLocaleString()}</span><br>${post.content}`;
+                div.innerHTML = `<strong></strong> <span style="color:#aaa;font-size:0.9em;">${new Date(post.date).toLocaleString()}</span><br>`;
+                div.querySelector('strong').textContent = post.username || 'Anonymous';
+                div.append(post.content); // Safely appends content as a text node
                 postList.appendChild(div);
             }
         }
