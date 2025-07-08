@@ -95,7 +95,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             try {
-                await aws_amplify.Auth.signIn(username, password);
+                await Amplify.Auth.signIn(username, password);
                 document.getElementById('auth-section').style.display = 'none';
                 showSection('games');
                 loadGames();
