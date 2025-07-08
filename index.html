@@ -153,7 +153,7 @@
                 let imageUrl = '';
                 try {
                     imageUrl = await aws_amplify.Storage.get(game.image);
-                } catch {}
+                } catch (err) { console.error(`Failed to get image ${game.image}:`, err); }
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.innerHTML = `<img src="${imageUrl}" alt="${game.title}"><h3>${game.title}</h3>`;
