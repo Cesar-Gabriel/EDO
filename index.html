@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>COBOLT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--await Amplify.Auth.signIn(username, password);-->
+    <!-- AWS Amplify for authentication and storage -->
+    <script src="https://dvf70qrt8ch2j.cloudfront.net/amplify/aws-amplify.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #23272a; color: #fff; margin: 0; }
+        header { background: #181c20; padding: 1em; text-align: center; }
+        nav a { color: #fff; margin: 0 1em; text-decoration: none; }
+        .container { max-width: 900px; margin: 2em auto; background: #2c3136; padding: 2em; border-radius: 8px; }
+        .game-list { display: flex; flex-wrap: wrap; gap: 1em; }
+        .game-card { background: #23272a; padding: 1em; border-radius: 6px; width: 200px; }
+        .game-card img { width: 100%; border-radius: 4px; }
+        .upload-form { margin-bottom: 2em; }
+        input, button { padding: 0.5em; border-radius: 4px; border: none; }
+        button { background: #3d59ab; color: #ffff; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src=logo.webp alt="COBOLT Logo" style="height: 50px;">
+                <style>img {
+            image-rendering: pixelated;
+        }
+        </style>
+        <nav>
+            <a href="#" onclick="showSection('games')">Games</a>
+            <a href="#" onclick="showSection('upload')">Upload</a>
+            <a href="#" onclick="showSection('posts')">Posts</a>
+            <a href="#" onclick="signOut()">Sign Out</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div id="auth-section">
+            <h2>Sign In</h2>
+            <input id="username" placeholder="Username" />
+            <input id="password" type="password" placeholder="Password" />
+            <button onclick="signIn()">Sign In</button>
+            <button onclick="signUp()">Sign Up</button>
+            <div id="auth-message"></div>
+        </div>
+        <div id="games-section" style="display:none;">
+            <h2>Games</h2>
+            <div class="game-list" id="game-list"></div>
+        </div>
+        <div id="upload-section" style="display:none;">
+            <h2>Upload Game</h2>
+            <form class="upload-form" onsubmit="uploadGame(event)">
+                <input id="game-title" placeholder="Game Title" required /><br><br>
+                <input id="game-image" type="file" accept="image/*" required /><br><br>
+                <button type="submit">Upload</button>
+            </form>
+            <div id="upload-message"></div>
+        </div>
+        <div id="posts-section" style="display:none;">
+            <h2>Posts</h2>
+            <form class="upload-form" onsubmit="createPost(event)">
+                <textarea id="post-content" placeholder="What's on your mind?" rows="3" style="width:100%;" required></textarea><br><br>
+                <button type="submit">Post</button>
+            </form>
+            <div id="post-message"></div>
+            <div id="post-list"></div>
+        </div>
+    </div>
+    <script>
+        // AWS Amplify configuration (replace with your AWS config)
+        window.AWS.config = {
+            Auth: {
+                region: 'us-east-1',
+                userPoolId: 'us-east-1_example',
+                userPoolWebClientId: 'exampleclientid',
+            },
+            Storage: {
+                AWSS3: {
+                    bucket: 'your-gamejolt-copy-bucket',
+                    region: 'us-east-1',
+                }
+            }
+        };
+        Amplify.configure(window.AWS.config);
+
+        // Simple UI logic
+        function showSection(section) {
+            document.getElementById('games-section').style.display = section === 'games' ? '' : 'none';
+            document.getElementById('upload-section').style.display = section === 'upload' ? '' : 'none';
+            document.getElementById('posts-section').style.display = section === 'posts' ? '' : 'none';
+        }
+
+        // Authentication
+        async function signIn() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                await Amplify.Auth.signIn(username, password);
+                document.getElementById('auth-section').style.display = 'none';
+                showSection('games');
+                loadGames();
+                loadPosts();
+            } catch (e) {
+                document.getElementById('auth-message').innerText = e.message;
+            }
+        }
+
+        async function signUp() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                await aws_amplify.Auth.signUp({ username, password });
+                document.getElementById('auth-message').innerText = 'Sign up successful. Please sign in.';
+            } catch (e) {
+                document.getElementById('auth-message').innerText = e.message;
+            }
+        }
+
+        async function signOut() {
+            await aws_amplify.Auth.signOut();
+            document.getElementById('auth-section').style.display = '';
+            document.getElementById('games-section').style.display = 'none';
+            document.getElementById('upload-section').style.display = 'none';
+            document.getElementById('posts-section').style.display = 'none';
+        }
+
+        // Game upload
+        async function uploadGame(event) {
+            event.preventDefault();
+            const title = document.getElementById('game-title').value;
+            const file = document.getElementById('game-image').files[0];
+            if (!file) return;
+            const key = `games/${Date.now()}_${file.name}`;
+            try {
+                await aws_amplify.Storage.put(key, file, { contentType: file.type });
+                // Save game metadata (in real app, use DynamoDB or similar)
+                let games = JSON.parse(localStorage.getItem('games') || '[]');
+                games.push({ title, image: key });
+                localStorage.setItem('games', JSON.stringify(games));
+                document.getElementById('upload-message').innerText = 'Game uploaded!';
+                loadGames();
+            } catch (e) {
+                document.getElementById('upload-message').innerText = e.message;
+            }
+        }
+
+        // Load games
+        async function loadGames() {
+            const gameList = document.getElementById('game-list');
+            gameList.innerHTML = '';
+            let games = JSON.parse(localStorage.getItem('games') || '[]');
+            for (const game of games) {
+                let imageUrl = '';
+                try {
+                    imageUrl = await aws_amplify.Storage.get(game.image);
+                } catch (err) { console.error(`Failed to get image ${game.image}:`, err); }
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `<img src="${imageUrl}" alt="${game.title}"><h3>${game.title}</h3>`;
+                gameList.appendChild(card);
+            }
+        }
+
+        // Posts logic
+        async function createPost(event) {
+            event.preventDefault();
+            const content = document.getElementById('post-content').value.trim();
+            if (!content) return;
+            let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            // Optionally, get username from Auth
+            let username = '';
+            try {
+                const user = await aws_amplify.Auth.currentAuthenticatedUser();
+                username = user.username || '';
+            } catch {}
+            posts.unshift({
+                content,
+                username: username,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('posts', JSON.stringify(posts));
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-message').innerText = 'Post created!';
+            loadPosts();
+        }
+
+        function loadPosts() {
+            const postList = document.getElementById('post-list');
+            postList.innerHTML = '';
+            let posts = JSON.parse(localStorage.getItem('posts') || '[]');
+            for (const post of posts) {
+                const div = document.createElement('div');
+                div.style.background = '#23272a';
+                div.style.margin = '1em 0';
+                div.style.padding = '1em';
+                div.style.borderRadius = '6px';
+                div.innerHTML = `<strong></strong> <span style="color:#aaa;font-size:0.9em;">${new Date(post.date).toLocaleString()}</span><br>`;
+                div.querySelector('strong').textContent = post.username || 'Anonymous';
+                div.append(post.content); // Safely appends content as a text node
+                postList.appendChild(div);
+            }
+        }
+
+        // Auto sign-in check
+        aws_amplify.Auth.currentAuthenticatedUser()
+            .then(() => {
+                document.getElementById('auth-section').style.display = 'none';
+                showSection('games');
+                loadGames();
+                loadPosts();
+            })
+            .catch(() => {
+                document.getElementById('auth-section').style.display = '';
+            });
+    </script>
+</body>
+</html>
