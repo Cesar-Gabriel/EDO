@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>COBOLT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--await Amplify.Auth.signIn(username, password);-->
+    <!--awai;-->
     <!-- AWS Amplify for authentication and storage -->
     <script src="https://dvf70qrt8ch2j.cloudfront.net/amplify/aws-amplify.min.js"></script>
     <style>
@@ -81,7 +81,7 @@
                 }
             }
         };
-        Amplify.configure(window.AWS.config);
+        window.Amplify.configure(window.AWS.config);
 
         // Simple UI logic
         function showSection(section) {
@@ -95,7 +95,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             try {
-                await Amplify.Auth.signIn(username, password);
+                await window.Amplify.Auth.signIn(username, password);
                 document.getElementById('auth-section').style.display = 'none';
                 showSection('games');
                 loadGames();
